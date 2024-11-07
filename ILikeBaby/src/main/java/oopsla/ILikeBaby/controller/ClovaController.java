@@ -2,8 +2,8 @@ package oopsla.ILikeBaby.controller;
 
 import lombok.RequiredArgsConstructor;
 import oopsla.ILikeBaby.domain.Clova;
+import oopsla.ILikeBaby.domain.dto.ChatResponse;
 import oopsla.ILikeBaby.service.ClovaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +22,11 @@ public class ClovaController {
         return "chat"; 
     }
     
+    @ResponseBody
     @PostMapping("/chat")
-    public String chat(@RequestParam String message) {
-        System.out.println("message = " + message);
-        clovaService.sendChatRequest(message);
-        return "redirect:/chat";
+    public ChatResponse chat(@RequestBody String message) {
+        System.out.println(message);
+        return clovaService.sendChatRequest(message);
     }
     
     @GetMapping

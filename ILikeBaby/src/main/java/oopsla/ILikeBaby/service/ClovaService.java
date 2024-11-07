@@ -1,17 +1,17 @@
 package oopsla.ILikeBaby.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import oopsla.ILikeBaby.domain.Clova;
-import oopsla.ILikeBaby.domain.dto.ClovaMessageDto;
+import oopsla.ILikeBaby.domain.dto.ChatResponse;
 import oopsla.ILikeBaby.repository.ClovaRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,50 +26,69 @@ public class ClovaService {
     @Value("${clova.api.gateway.key}")
     private String apiGatewayKey;
     
-    private final RestTemplate restTemplate = new RestTemplate();
-    
     private final ClovaRepository clovaRepository;
     
-    public String sendChatRequest(String userMessage) {
-        // 요청 헤더 설정
+    public ChatResponse sendChatRequest(String message) {
+        
+        
+        RestTemplate restTemplate = new RestTemplate();
+        
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.set("X-NCP-CLOVASTUDIO-API-KEY", apiKey);
         headers.set("X-NCP-APIGW-API-KEY", apiGatewayKey);
-        headers.set("X-NCP-CLOVASTUDIO-REQUEST-ID", "test-request-id");
+        headers.set("X-NCP-CLOVASTUDIO-REQUEST-ID", UUID.randomUUID().toString());
         
-        // 요청 바디 생성
-        Map<String, Object> message = new HashMap<>();
-        message.put("role", "user");
-        message.put("content", userMessage);
+        // JSON Payload
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("topP", 0.8);
+        payload.put("topK", 0);
+        payload.put("maxTokens", 150);
+        payload.put("temperature", 0.5);
+        payload.put("repeatPenalty", 5.0);
+        payload.put("includeAiFilters", true);
+        payload.put("seed", 0);
         
-        Map<String, Object> body = new HashMap<>();
-        body.put("messages", new Map[]{message});
-        body.put("topP", 0.8);
-        body.put("temperature", 0.5);
-        body.put("maxTokens", 500);
+        // Messages list
+        List<Map<String, Object>> messages = new ArrayList<>();
         
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+        Map<String, Object> systemMessage = new HashMap<>();
+        systemMessage.put("role", "system");
+        systemMessage.put("content", "-영아 부모님을 위한 상담 서비스 입니다.\n-답변을 짧게 생성해줘\n\n\n");
         
-        // POST 요청 전송 및 응답 받기
-        ResponseEntity<ClovaMessageDto> response = restTemplate.exchange(
-                apiUrl, HttpMethod.POST, request, ClovaMessageDto.class
-        );
+        Map<String, Object> userMessageMap = new HashMap<>();
+        userMessageMap.put("role", "user");
+        userMessageMap.put("content", message);
         
-        ClovaMessageDto clovaMessageDto = response.getBody();
+        messages.add(systemMessage);
+        messages.add(userMessageMap);
         
-        // 응답 내용 가져오기
-        String clovaMessage = clovaMessageDto.getResult().getMessage().getContent();
+        payload.put("messages", messages);
         
-        System.out.println("요청 = " + userMessage);
-        System.out.println("응답 = " + clovaMessage);
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
         
-        clovaRepository.save(Clova.builder()
-                .requestContent(userMessage)
-                .responseContent(clovaMessage)
-                .build());
+        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, request, String.class);
         
-        return clovaMessage;
+        ObjectMapper mapper = new ObjectMapper();
+        String content;
+        
+        try {
+            JsonNode root = mapper.readTree(response.getBody());
+            content = root.path("result").path("message").path("content").asText();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        
+        ChatResponse result = ChatResponse.builder()
+                .message(content)
+                .build();
+        
+        
+        System.out.println("content = " + result);
+        //return content;
+        return result;
     }
     
     public List<Clova> readChat() {
