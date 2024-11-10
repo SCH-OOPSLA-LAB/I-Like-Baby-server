@@ -2,32 +2,45 @@ package oopsla.ILikeBaby.controller;
 
 import lombok.RequiredArgsConstructor;
 import oopsla.ILikeBaby.domain.dto.MemberRequestDto;
-import oopsla.ILikeBaby.domain.dto.MemberResponseDto;
 import oopsla.ILikeBaby.service.MemberService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/member")
 public class MemberController {
     
     private final MemberService memberService;
     
-    @PostMapping("/member/create")
-    ResponseEntity<MemberResponseDto> createMember(@RequestBody MemberRequestDto memberRequestDto) {
+    @PostMapping("/join")
+    public ResponseEntity<String> join(@RequestBody MemberRequestDto memberRequestDto) {
         
+        System.out.println("memberRequestDTO.getAccountId() = " + memberRequestDto.getAccountId());
+        System.out.println("memberRequestDTO.getPassword() = " + memberRequestDto.getPassword());
         
-        ArrayList<String> arrayList = new ArrayList<>();
+        memberService.joinMember(memberRequestDto);
         
-        
-        return ResponseEntity.ok().body(memberService.createMember(memberRequestDto));
+        System.out.println("회원가입 성공");
+        return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
     }
+    
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody MemberRequestDto memberRequestDto) {
+        
+        
+        System.out.println("member.getAccountId() = " + memberRequestDto.getAccountId());
+        System.out.println("member.getPassword() = " + memberRequestDto.getPassword());
+        
+        memberService.loginMember(memberRequestDto);
+        
+        System.out.println("로그인 성공");
+        return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
+    }
+    
     
     
 }
