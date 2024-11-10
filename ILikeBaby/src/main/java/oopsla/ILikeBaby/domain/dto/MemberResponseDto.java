@@ -10,6 +10,6 @@ public class MemberResponseDto {
     
     String accountId;
     String password;
-    MonitorStatus monitorStatus;
+    String monitorStatus;
     
 }

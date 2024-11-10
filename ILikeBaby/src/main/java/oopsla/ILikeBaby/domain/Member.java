@@ -23,7 +23,7 @@ public class Member {
     
     String password;
 
-    MonitorStatus monitorStatus;
+    String monitorStatus;
             
 }
 
