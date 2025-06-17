@@ -16,6 +16,11 @@ import oopsla.ILikeBaby.repository.MemberRepository;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -174,13 +179,13 @@ public class MonitorService {
                     .build());
         }
         
-        
         String dateFolder = LocalDate.now().toString();
         String directoryPath = BASE_DIRECTORY + File.separator + dateFolder + folder;
         Path filePath = Paths.get(directoryPath, "latest_image.jpg");
         
         System.out.println("이미지 저장(덮어쓰기) = " + filePath);
         
+        // Save modified byte array to file
         try {
             Files.write(filePath, byteImage);
         } catch (IOException e) {

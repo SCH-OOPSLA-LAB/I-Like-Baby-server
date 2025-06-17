@@ -76,7 +76,7 @@ public class StatsService {
     public void insertSampleData() {
         
         // 데이터 생성 시작 시간과 종료 시간
-        Instant startTime = Instant.parse("2024-11-09T15:01:00Z"); // UTC 시간대 기준
+        Instant startTime = Instant.parse("2024-11-12T15:01:00Z"); // UTC 시간대 기준
         Instant endTime = startTime.plus(4, ChronoUnit.HOURS);
         
         Random random = new Random();
@@ -89,7 +89,7 @@ public class StatsService {
             long elapsedMinutes = ChronoUnit.MINUTES.between(startTime, currentTime);
             
             if ((elapsedMinutes / 45) % 2 == 0) { // 45분 간격으로 주기를 변경
-                movementLevel = 3; // 얕은 잠: movementLevel 3
+                movementLevel = 2; // 얕은 잠: movementLevel 3
             } else {
                 movementLevel = random.nextInt(2) + 1; // 깊은 잠: movementLevel 1 또는 2
             }

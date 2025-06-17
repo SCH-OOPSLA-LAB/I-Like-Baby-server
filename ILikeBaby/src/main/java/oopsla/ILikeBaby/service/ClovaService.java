@@ -55,7 +55,10 @@ public class ClovaService {
         
         Map<String, Object> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
-        systemMessage.put("content", "-영아 부모님을 위한 상담 서비스 입니다.\n-답변을 짧게 생성해줘\n\n\n");
+        systemMessage.put("content", "-영아 부모님을 위한 상담 서비스 입니다." +
+                "\n-답변을 짧게 생성해줘" +
+                "\n-알아 들을 수 없으면 알아 들을 수 없다고 대답해줘ㅜㅡ" +
+                "\n\n");
         
         Map<String, Object> userMessageMap = new HashMap<>();
         userMessageMap.put("role", "user");

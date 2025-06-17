@@ -28,7 +28,7 @@ public class StatsController {
     @ResponseBody
     @GetMapping("/sample")
     public String sample() {
-        //statsService.insertSampleData();
+        statsService.insertSampleData();
         return "저장 완료";
     }
     
