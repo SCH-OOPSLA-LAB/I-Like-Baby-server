@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat History</title>
+</head>
+<body>
+
+<h1>채팅 기록</h1>
+<h1><a href="/">Home</a></h1>
+
+<form method="post" action="api/clova/chat">
+    <label for="message">채팅 보내기:</label>
+    <input type="text" id="message" name="message" required
+           style="width: 100%; font-size: 1.5rem; padding: 10px; box-sizing: border-box;">
+    <button type="submit" style="font-size: 1.5rem; padding: 10px 20px;">Send</button>
+</form>
+
+
+<hr>
+
+<table border="1" cellpadding="10" cellspacing="0">
+    <thead>
+    <tr>
+        <th>no</th>
+        <th>요청</th>
+        <th>응답</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 채팅 기록 반복 -->
+    <tr th:each="chat : ${clovaRepository}">
+        <td th:text="${chat.id}">id</td>
+        <td th:text="${chat.requestContent}">requestContent</td>
+        <td th:text="${chat.responseContent}">responseContent</td>
+    </tr>
+    </tbody>
+</table>
+
+
+<!-- 채팅 기록 반복 -->
+<!--<div th:each="chat : ${clovaRepository}">
+    <p>
+        <strong>요청:</strong>
+        <span th:utext="${#strings.replace(chat.requestContent, '\n', '<br>')}"></span>
+    </p>
+    <p>
+        <strong>응답:</strong>
+        <span th:utext="${#strings.replace(chat.responseContent, '\n', '<br>')}"></span>
+    </p>
+    <hr> &lt;!&ndash; 각 기록 구분선 &ndash;&gt;
+</div>-->
+
+</body>
+</html>
